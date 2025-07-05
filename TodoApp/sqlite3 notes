@@ -1,0 +1,38 @@
+#INSERTING DATABASE TABLE(TODOS)
+
+INSERT INTO todos(title, description,priority, complete)
+VALUES('Go to store', 'To pick up eggs', 4, False);
+INSERT INTO todos(title, description,priority, complete)
+VALUES('Haircut', 'Need to get length 1mm', 3, False);
+
+----------------------------------------------------------------
+
+#SELECT SQL QUERIES
+
+SELECT * FROM todos;
+SELECT title FROM todos;
+SELECT description FROM todos;
+SELECT title, description FROM todos;
+SELECT title, description, priority FROM todos;
+
+-----------------------------------------------------------------------------
+
+#WHERE SQL QUERIES
+
+SELECT * FROM todos WHERE priority = 5;
+SELECT * FROM todos WHERE title = 'Feed dog';
+SELECT * FROM todos WHERE id = 2;
+
+-------------------------------------------------------------------------------
+
+#UPDATE SQL QUERIES
+
+UPDATE todos SET complete=True WHERE id=5;
+UPDATE todos SET complete=True WHERE title = 'Learn something new';
+
+---------------------------------------------------------------------------------
+
+#DELETE SQL QUERIES
+
+DELETE FROM todos WHERE id = 5;
+DELETE FROM todos WHERE complete = 0; //not recommended
