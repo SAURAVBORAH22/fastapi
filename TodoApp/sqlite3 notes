@@ -36,3 +36,9 @@ UPDATE todos SET complete=True WHERE title = 'Learn something new';
 
 DELETE FROM todos WHERE id = 5;
 DELETE FROM todos WHERE complete = 0; //not recommended
+
+-----------------------------------------------------------------------------------
+
+#Foreign Key( Refers to primary key of another table having 1 to many relationship)
+
+SELECT * FROM todos WHERE owner = 1;
