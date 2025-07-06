@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends, HTTPException, Path
 from starlette import status
+from routers import auth
 
 import models
 from models import Todos
@@ -12,6 +13,9 @@ app = FastAPI()
 
 # use database.py file and models.py file to create database
 models.Base.metadata.create_all(bind=engine)
+
+#including auth router to main file
+app.include_router(auth.router)
 
 
 #opens up a connect to db only when we are using it and then closes the connection
