@@ -1,3 +1,4 @@
+from datetime import timedelta, datetime, timezone
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from passlib.context import CryptContext
@@ -7,8 +8,12 @@ from starlette import status
 from database import SessionLocal
 from models import Users
 from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
 
 router = APIRouter()
+
+SECRET_KEY = '5672142477cdb26f78fc5c79baa5295b77164a8a45335e7145fc07caf800f1e0'  #JWT Secret Key
+ALGORITHM = 'HS256' #JWT Algorithm
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -19,6 +24,11 @@ class CreateUserRequest(BaseModel):
     last_name: str
     password: str
     role: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 
 #opens up a connect to db only when we are using it and then closes the connection
@@ -39,7 +49,14 @@ def authenticate_user(username: str, password: str, db: db_dependency):
         return False
     if not bcrypt_context.verify(password, user.hashed_password):
         return False
-    return True
+    return user
+
+
+def create_access_token(username: str, user_id: str, expires_delta: timedelta):
+    encode = {'sub': username, 'id': user_id}
+    expires = datetime.now(timezone.utc) + expires_delta
+    encode.update({'exp': expires})
+    return jwt.encode(encode, SECRET_KEY, algorithm = ALGORITHM)
 
 
 @router.post("/auth/", status_code=status.HTTP_201_CREATED)
@@ -57,9 +74,10 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
     db.commit()
 
 
-@router.post("/token")
+@router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         return 'Failed Authentication'
-    return 'Successful Authentication'
+    token = create_access_token(user.username, user.id, timedelta(minutes=20))
+    return {'access_token': token, 'token_type': 'bearer'}
